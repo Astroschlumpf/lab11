@@ -76,8 +76,19 @@ void step(double* const f1, double* const f0,
   for(int i=0;i<N;i++) d[i] = 1.0 + 2.0*D*dt/(dx*dx);
   for(int i=0;i<N;i++) u[i] = - D*dt/(dx*dx);
   for(int i=0;i<N;i++) l[i] = - D*dt/(dx*dx);
-
-
+  
+  for(int i=1;i<N;i++){
+    d[i]=d[i]*d[i-1]-u[i-1]*l[i];
+    u[i]*=d[i-1];
+    f0[i]=f0[i]*d[i-1]-f0[i-1]*l[i];
+  }
+  f1[N-1]=f0[N-1]/d[N-1];
+  for (int i=N-2;i>=0;i--){
+    f1[i]=(f0[i]-u[i]*f1[i+1])/d[i];
+  }
+  
+  
+  
   delete[] d;
   delete[] u;
   delete[] l;
@@ -86,7 +97,7 @@ void step(double* const f1, double* const f0,
 void initialize(double* const u0, const double dx,
                 const double dt, const double xmin,  const int N)
 {
-   double u,ux, uxx;
+   // double u,ux, uxx;
    for(int i=0; i<N; i++)
    {
      double x = xmin + i*dx;
